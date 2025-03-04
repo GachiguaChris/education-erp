@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Education ERP - Login</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1a237e, #0d47a1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .container {
+      position: relative;
+      width: 800px;
+      height: 500px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    .container::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 500px;
+      height: 500px;
+      background: linear-gradient(60deg, transparent, #4fc3f7, #4fc3f7);
+      transform-origin: bottom right;
+      animation: animate 6s linear infinite;
+    }
+
+    .container::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 500px;
+      height: 500px;
+      background: linear-gradient(60deg, transparent, #e91e63, #e91e63);
+      transform-origin: bottom right;
+      animation: animate 6s linear infinite;
+      animation-delay: -3s;
+    }
+
+    @keyframes animate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .form-container {
+      position: absolute;
+      inset: 2px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      z-index: 10;
+      display: flex;
+    }
+
+    .form {
+      flex: 0 0 50%;
+      padding: 40px;
+      transition: 0.5s;
+    }
+
+    .form.sign-in {
+      transform: translateX(0);
+    }
+
+    .form.sign-up {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+
+    .container.active .form.sign-in {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+
+    .container.active .form.sign-up {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    h2 {
+      color: #1a237e;
+      font-size: 2em;
+      margin-bottom: 30px;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: 0.3s;
+    }
+
+    input:focus {
+      border-color: #1a237e;
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #1a237e;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #0d47a1;
+    }
+
+    .toggle-form {
+      text-align: center;
+      margin-top: 20px;
+      color: #666;
+    }
+
+    .toggle-form a {
+      color: #1a237e;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .toggle-form a:hover {
+      text-decoration: underline;
+    }
+
+    .icon {
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="container">
+    <div class="form-container">
+      <form class="form sign-in">
+        <h2><i class="fas fa-user-graduate icon"></i>Student Login</h2>
+        <div class="input-group">
+          <input type="email" placeholder="Email" required>
+        </div>
+        <div class="input-group">
+          <input type="password" placeholder="Password" required>
+        </div>
+        <button type="button" onclick="redirectToStudent()">Sign In</button>
+        <div class="toggle-form">
+          Don't have an account? <a onclick="toggleForm()">Register Now</a>
+        </div>
+      </form>
+
+      <form class="form sign-up">
+        <h2><i class="fas fa-user-plus icon"></i>Create Account</h2>
+        <div class="input-group">
+          <input type="text" placeholder="Full Name" required>
+        </div>
+        <div class="input-group">
+          <input type="email" placeholder="Email" required>
+        </div>
+        <div class="input-group">
+          <input type="password" placeholder="Password" required>
+        </div>
+        <button type="button" onclick="redirectToStudent()">Register</button>
+        <div class="toggle-form">
+          Already have an account? <a onclick="toggleForm()">Sign In</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function toggleForm() {
+      const container = document.getElementById('container');
+      container.classList.toggle('active');
+    }
+
+    function redirectToStudent() {
+      window.location.href = 'students.html';
+    }
+  </script>
+  <script src="login.js"></script>
+  <script src="firebase.js"></script>
+</body>
+
+</html>

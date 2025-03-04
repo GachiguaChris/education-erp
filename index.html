@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduManage Pro - Education ERP System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+        }
+        
+        .hero-section {
+            background: linear-gradient(rgba(44, 62, 80, 0.9), rgba(44, 62, 80, 0.9)),
+                        url('https://images.unsplash.com/photo-1580582932707-520aed937b7b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            background-position: center;
+            height: 90vh;
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+
+        .feature-card {
+            transition: transform 0.3s;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .nav-link {
+            color: var(--primary-color) !important;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background-color: var(--secondary-color);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 30px;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .testimonial-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .pricing-card {
+            border: 2px solid var(--secondary-color);
+            border-radius: 15px;
+            transition: all 0.3s;
+        }
+
+        .pricing-card:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="data:image/png;base64,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" alt="EduManage Pro" height="40">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" title="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#testimonials">Testimonials</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#pricing">Pricing</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                    <li class="nav-item"><a class="btn btn-primary ms-2" href="login.html">Try Demo</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container text-center">
+            <h1 class="display-4 mb-4">Transform Your Institution with Smart Management</h1>
+            <p class="lead mb-4">Comprehensive ERP Solution for Schools, Colleges, and Universities</p>
+            <div class="d-flex gap-3 justify-content-center">
+                <a href="login.html" class="btn btn-primary btn-lg">Start Free Trial</a>
+                <a href="login.html" class="btn btn-outline-light btn-lg">Watch Demo</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">Powerful Features</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-user-clock fa-3x text-primary mb-3"></i>
+                            <h4>Attendance Management</h4>
+                            <p>Automated attendance tracking with biometric integration and real-time reporting</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-chart-line fa-3x text-success mb-3"></i>
+                            <h4>Financial Management</h4>
+                            <p>Comprehensive fee management with online payment gateway integration</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-robot fa-3x text-danger mb-3"></i>
+                            <h4>AI-Powered Analytics</h4>
+                            <p>Predictive analytics and smart reports for data-driven decisions</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="bg-light py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">What Our Clients Say</h2>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="testimonial-card">
+                        <p>"EduManage Pro transformed how we manage our university operations. Highly recommended!"</p>
+                        <h5>Dr. Sarah Johnson</h5>
+                        <small>University Chancellor</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="testimonial-card">
+                        <p>"The best investment we've made in our school's digital infrastructure."</p>
+                        <h5>Michael Chen</h5>
+                        <small>School Principal</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="testimonial-card">
+                        <p>"Implementation was seamless and the support team is exceptional."</p>
+                        <h5>Priya Sharma</h5>
+                        <small>College Administrator</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">Flexible Pricing Plans</h2>
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="pricing-card text-center p-4">
+                        <h4>Basic</h4>
+                        <div class="price display-4">$99<span class="fs-6">/month</span></div>
+                        <ul class="list-unstyled my-4">
+                            <li class="mb-3">Up to 500 Students</li>
+                            <li class="mb-3">Basic Features</li>
+                            <li class="mb-3">Email Support</li>
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary">Start Trial</a>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="pricing-card text-center p-4 bg-primary text-white">
+                        <h4>Pro</h4>
+                        <div class="price display-4">$199<span class="fs-6">/month</span></div>
+                        <ul class="list-unstyled my-4">
+                            <li class="mb-3">Up to 2000 Students</li>
+                            <li class="mb-3">Advanced Features</li>
+                            <li class="mb-3">Priority Support</li>
+                        </ul>
+                        <a href="#" class="btn btn-light">Most Popular</a>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="pricing-card text-center p-4">
+                        <h4>Enterprise</h4>
+                        <div class="price display-4">Custom</div>
+                        <ul class="list-unstyled my-4">
+                            <li class="mb-3">Unlimited Students</li>
+                            <li class="mb-3">Full Features</li>
+                            <li class="mb-3">24/7 Support</li>
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary">Contact Sales</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>EduManage Pro</h5>
+                    <p>Transformative Education Management Solutions</p>
+                    <div class="social-links">
+                        <a href="#" class="text-light me-3" title="Facebook"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-light me-3" title="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-light me-3" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <h5>Contact</h5>
+                    <ul class="list-unstyled">
+                        <li>kidspoiler63@gmail.com</li>
+                        <li>0790081941</li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Legal</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="login.html" class="text-light">Privacy Policy</a></li>
+                        <li><a href="login.html" class="text-light">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <small>&copy; 2025 EduManage Pro. All rights reserved.</small>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 50) {
+                document.querySelector('nav').classList.add('scrolled');
+            } else {
+                document.querySelector('nav').classList.remove('scrolled');
+            }
+        });
+    </script>
+</body>
+</html>

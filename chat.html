@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduERP Chat & Video Conferencing</title>
+  <style>
+    :root {
+      --primary: #2A5C8A;
+      --secondary: #4CAF50;
+      --accent: #FF5252;
+      --neutral: #F5F5F5;
+      --dark-neutral: #E0E0E0;
+      --text: #333333;
+      --light-text: #777777;
+      --white: #FFFFFF;
+      --hover: #EAF2F8;
+      --unread: #E3F2FD;
+      --border: #E5E5E5;
+      --online: #4CAF50;
+      --busy: #FFC107;
+      --offline: #9E9E9E;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      color: var(--text);
+      background-color: var(--neutral);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    header {
+      background-color: var(--white);
+      padding: 12px 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+    
+    .logo {
+      font-weight: bold;
+      color: var(--primary);
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .header-controls {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+    
+    .search-global {
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      width: 250px;
+      background-color: var(--neutral);
+    }
+    
+    .search-global input {
+      border: none;
+      outline: none;
+      background: transparent;
+      width: 100%;
+      margin-left: 8px;
+    }
+    
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    
+    .profile-pic {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--neutral);
+      color: var(--primary);
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    
+    .icon-btn:hover {
+      background-color: var(--dark-neutral);
+    }
+    
+    .main-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    
+    .sidebar {
+      width: 300px;
+      background-color: var(--white);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .sidebar-header {
+      padding: 15px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .sidebar-title {
+      font-weight: 600;
+      color: var(--primary);
+    }
+    
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .tab {
+      padding: 12px;
+      flex: 1;
+      text-align: center;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    
+    .tab.active {
+      color: var(--primary);
+      border-bottom: 2px solid var(--primary);
+    }
+    
+    .search-chats {
+      padding: 10px 15px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .search-box {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      background-color: var(--neutral);
+    }
+    
+    .search-box input {
+      border: none;
+      outline: none;
+      background: transparent;
+      width: 100%;
+      margin-left: 8px;
+      font-size: 14px;
+    }
+    
+    .chat-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+    
+    .chat-item {
+      padding: 12px 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+    
+    .chat-item:hover {
+      background-color: var(--hover);
+    }
+    
+    .chat-item.active {
+      background-color: var(--hover);
+    }
+    
+    .chat-item.unread {
+      background-color: var(--unread);
+    }
+    
+    .chat-avatar {
+      position: relative;
+    }
+    
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    
+    .status-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      border: 2px solid var(--white);
+    }
+    
+    .status-online {
+      background-color: var(--online);
+    }
+    
+    .status-busy {
+      background-color: var(--busy);
+    }
+    
+    .status-offline {
+      background-color: var(--offline);
+    }
+    
+    .chat-details {
+      flex: 1;
+      overflow: hidden;
+    }
+    
+    .chat-top {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 3px;
+    }
+    
+    .chat-name {
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .chat-time {
+      font-size: 12px;
+      color: var(--light-text);
+      white-space: nowrap;
+    }
+    
+    .chat-message {
+      font-size: 13px;
+      color: var(--light-text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .chat-badges {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .badge {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: var(--accent);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .chat-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--white);
+    }
+    
+    .chat-header {
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .chat-header-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .chat-header-name {
+      font-weight: 600;
+    }
+    
+    .chat-header-status {
+      font-size: 12px;
+      color: var(--light-text);
+    }
+    
+    .chat-header-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .action-btn {
+      padding: 8px 15px;
+      background-color: var(--primary);
+      color: var(--white);
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+    }
+    
+    .action-btn:hover {
+      background-color: #245079;
+    }
+    
+    .secondary-btn {
+      background-color: var(--neutral);
+      color: var(--primary);
+    }
+    
+    .secondary-btn:hover {
+      background-color: var(--dark-neutral);
+    }
+    
+    .video-container {
+      display: none;
+      background-color: #000;
+      height: 300px;
+      position: relative;
+    }
+    
+    .video-container.active {
+      display: block;
+    }
+    
+    .video-controls {
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .video-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: rgba(0,0,0,0.5);
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .end-call {
+      background-color: var(--accent);
+    }
+    
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .message {
+      display: flex;
+      gap: 10px;
+      max-width: 75%;
+    }
+    
+    .message.outgoing {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+    
+    .message-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      align-self: flex-end;
+    }
+    
+    .message-content {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    
+    .message-bubble {
+      padding: 10px 15px;
+      background-color: var(--neutral);
+      border-radius: 18px;
+      border-bottom-left-radius: 5px;
+      font-size: 14px;
+    }
+    
+    .outgoing .message-bubble {
+      background-color: var(--primary);
+      color: var(--white);
+      border-radius: 18px;
+      border-bottom-right-radius: 5px;
+    }
+    
+    .message-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--light-text);
+    }
+    
+    .message-time {
+      margin-left: 5px;
+    }
+    
+    .message-status {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    
+    .chat-input-container {
+      padding: 15px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .input-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .chat-input {
+      flex: 1;
+      padding: 10px 15px;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      outline: none;
+      font-size: 14px;
+      resize: none;
+      height: 45px;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+    
+    .right-sidebar {
+      width: 280px;
+      background-color: var(--white);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .right-header {
+      padding: 15px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+      color: var(--primary);
+    }
+    
+    .calendar-section {
+      padding: 15px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .section-title {
+      font-weight: 600;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .view-all {
+      font-size: 12px;
+      color: var(--primary);
+      text-decoration: none;
+      cursor: pointer;
+    }
+    
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+    
+    .calendar-nav {
+      display: flex;
+      gap: 5px;
+    }
+    
+    .calendar-nav-btn {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    
+    .calendar-nav-btn:hover {
+      background-color: var(--neutral);
+    }
+    
+    .calendar-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      margin-bottom: 5px;
+    }
+    
+    .day-name {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--light-text);
+    }
+    
+    .calendar-dates {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+    }
+    
+    .date-cell {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      position: relative;
+    }
+    
+    .date-cell:hover {
+      background-color: var(--neutral);
+    }
+    
+    .date-cell.event {
+      color: var(--primary);
+      font-weight: 600;
+    }
+    
+    .date-cell.today {
+      background-color: var(--primary);
+      color: var(--white);
+    }
+    
+    .event-indicator {
+      position: absolute;
+      bottom: 2px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background-color: var(--primary);
+    }
+    
+    .upcoming-section {
+      padding: 15px;
+      flex: 1;
+      overflow-y: auto;
+    }
+    
+    .upcoming-event {
+      padding: 10px;
+      background-color: var(--neutral);
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    
+    .event-time {
+      font-size: 12px;
+      color: var(--primary);
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    
+    .event-title {
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    
+    .event-participants {
+      font-size: 12px;
+      color: var(--light-text);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .event-actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+    
+    .small-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    
+    .participant-count {
+      background-color: var(--dark-neutral);
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+    }
+    
+    .participant-avatars {
+      display: flex;
+      align-items: center;
+      margin-left: 5px;
+    }
+    
+    .participant-avatars .small-avatar:not(:first-child) {
+      margin-left: -8px;
+    }
+    
+    .file-attachment {
+      display: flex;
+      align-items: center;
+      background-color: var(--neutral);
+      padding: 10px;
+      border-radius: 10px;
+      margin-top: 5px;
+      gap: 10px;
+    }
+    
+    .file-icon {
+      width: 40px;
+      height: 40px;
+      background-color: var(--primary);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-weight: bold;
+    }
+    
+    .file-details {
+      flex: 1;
+      overflow: hidden;
+    }
+    
+    .file-name {
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .file-size {
+      font-size: 12px;
+      color: var(--light-text);
+    }
+    
+    .date-divider {
+      text-align: center;
+      position: relative;
+      margin: 20px 0;
+    }
+    
+    .date-divider span {
+      background-color: var(--white);
+      padding: 0 10px;
+      font-size: 12px;
+      color: var(--light-text);
+      position: relative;
+      z-index: 1;
+    }
+    
+    .date-divider::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 1px;
+      background-color: var(--border);
+    }
+    
+    .system-message {
+      text-align: center;
+      font-size: 12px;
+      color: var(--light-text);
+      margin: 10px 0;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 1200px) {
+      .right-sidebar {
+        width: 240px;
+      }
+    }
+    
+    @media (max-width: 992px) {
+      .sidebar {
+        width: 250px;
+      }
+      
+      .right-sidebar {
+        display: none;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .main-container {
+        position: relative;
+      }
+      
+      .sidebar {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 280px;
+        z-index: 5;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+      }
+      
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      
+      .mobile-overlay {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 4;
+        display: none;
+      }
+      
+      .mobile-overlay.active {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <span>📚</span>
+      EduERP Chat
+    </div>
+    
+    <div class="header-controls">
+      <div class="search-global">
+        <span>🔍</span>
+        <input type="text" placeholder="Search messages, files, people...">
+      </div>
+      
+      <button class="icon-btn">🔔</button>
+      <button class="icon-btn">📆</button>
+      
+      <div class="profile">
+        <img src="C:\Users\Admin\Desktop\education\gettyimages-2061251622-612x612.jpg" alt="" class="profile-pic">
+        <span>Christopher</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="main-container">
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">Messages</div>
+        <button class="icon-btn">✏️</button>
+      </div>
+      
+      <div class="tabs">
+        <div class="tab active">Chats</div>
+        <div class="tab">Groups</div>
+        <div class="tab">Classes</div>
+      </div>
+      
+      <div class="search-chats">
+        <div class="search-box">
+          <span>🔍</span>
+          <input type="text" placeholder="Search">
+        </div>
+      </div>
+      
+      <div class="chat-list">
+        <div class="chat-item active">
+          <div class="chat-avatar">
+            <img src="/api/placeholder/48/48" alt="avatar" class="avatar">
+            <div class="status-indicator status-online"></div>
+          </div>
+          <div class="chat-details">
+            <div class="chat-top">
+              <div class="chat-name">Prof. Sarah Wilson</div>
+              <div class="chat-time">10:30 AM</div>
+            </div>
+            <div class="chat-message">Let's discuss the project timeline during our call.</div>
+          </div>
+        </div>
+        
+        <div class="chat-item unread">
+          <div class="chat-avatar">
+            <img src="/api/placeholder/48/48" alt="avatar" class="avatar">
+            <div class="status-indicator status-offline"></div>
+          </div>
+          <div class="chat-details">
+            <div class="chat-top">
+              <div class="chat-name">Advanced Physics Group</div>
+              <div class="chat-time">9:45 AM</div>
+            </div>
+            <div class="chat-message">Michael: I've uploaded the lab assignment for review.</div>
+          </div>
+          <div class="chat-badges">
+            <div class="badge">3</div>
+          </div>
+        </div>
+        
+        <div class="chat-item">
+          <div class="chat-avatar">
+            <img src="/api/placeholder/48/48" alt="avatar" class="avatar">
+            <div class="status-indicator status-busy"></div>
+          </div>
+          <div class="chat-details">
+            <div class="chat-top">
+              <div class="chat-name">Dr. Robert Chen</div>
+              <div class="chat-time">Yesterday</div>
+            </div>
+            <div class="chat-message">Please submit your research proposal by Friday.</div>
+          </div>
+        </div>
+        
+        <div class="chat-item">
+          <div class="chat-avatar">
+            <img src="/api/placeholder/48/48" alt="avatar" class="avatar">
+            <div class="status-indicator status-online"></div>
+          </div>
+          <div class="chat-details">
+            <div class="chat-top">
+              <div class="chat-name">Computer Science 101</div>
+              <div class="chat-time">Yesterday</div>
+            </div>
+            <div class="chat-message">Prof. Anderson: Reminder about tomorrow's quiz!</div>
+          </div>
+        </div>
+        
+        <div class="chat-item">
+          <div class="chat-avatar">
+            <img src="/api/placeholder/48/48" alt="avatar" class="avatar">
+            <div class="status-indicator status-offline"></div>
+          </div>
+          <div class="chat-details">
+            <div class="chat-top">
+              <div class="chat-name">Emma Thompson</div>
+              <div class="chat-time">2/24/25</div>
+            </div>
+            <div class="chat-message">Did you get my notes from last week's lecture?</div>
+          </div>
+        </div>
+        
+        <div class="chat-item">
+          <div class="chat-avatar">
+            <img src="/api/placeholder/48/48" alt="avatar" class="avatar">
+            <div class="status-indicator status-offline"></div>
+          </div>
+          <div class="chat-details">
+            <div class="chat-top">
+              <div class="chat-name">Student Council Group</div>
+              <div class="chat-time">2/23/25</div>
+            </div>
+            <div class="chat-message">Lisa: Meeting scheduled for next Monday at 4 PM.</div>
+          </div>
+        </div>
+        
+        <div class="chat-item">
+          <div class="chat-avatar">
+            <img src="/api/placeholder/48/48" alt="avatar" class="avatar">
+            <div class="status-indicator status-offline"></div>
+          </div>
+          <div class="chat-details">
+            <div class="chat-top">
+              <div class="chat-name">James Miller</div>
+              <div class="chat-time">2/22/25</div>
+            </div>
+            <div class="chat-message">Thanks for helping with the assignment!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="chat-area">
+      <div class="chat-header">
+        <div class="chat-header-info">
+          <img src="/api/placeholder/40/40" alt="avatar" class="avatar">
+          <div>
+            <div class="chat-header-name">Prof. Sarah Wilson</div>
+            <div class="chat-header-status">Online • Mathematics Department</div>
+          </div>
+        </div>
+        
+        <div class="chat-header-actions">
+          <button class="action-btn secondary-btn">
+            <span>📁</span>
+            Files
+          </button>
+          <button class="action-btn">
+            <span>📞</span>
+            Audio Call
+          </button>
+          <button class="action-btn">
+            <span>📹</span>
+            Video Call
+          </button>
+        </div>
+      </div>
+      
+      <div class="video-container">
+        <div class="video-content">
+          <!-- Video call content goes here -->
+          <div style="color: white; display: flex; justify-content: center; align-items: center; height: 100%;">
+            <div style="text-align: center;">
+              <div style="font-size: 64px; margin-bottom: 10px;">📹</div>
+              <div>Video call with Prof. Sarah Wilson</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="video-controls">
+          <button class="video-btn">🎙️</button>
+          <button class="video-btn">📹</button>
+          <button class="video-btn">💻</button>
+          <button class="video-btn">✋</button>
+          <button class="video-btn end-call">📴</button>
+        </div>
+      </div>
+      
+      <div class="chat-messages">
+        <div class="date-divider">
+          <span>Yesterday, February 24, 2025</span>
+        </div>
+        
+        <div class="message">
+          <img src="/api/placeholder/36/36" alt="avatar" class="message-avatar">
+          <div class="message-content">
+            <div class="message-bubble">
+              Good morning, John! I wanted to touch base about your project progress. How's it coming along?
+            </div>
+            <div class="message-info">
+              <span>Prof. Sarah Wilson</span>
+              <span class="message-time">9:15 AM</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="message outgoing">
+          <img src="/api/placeholder/36/36" alt="avatar" class="message-avatar">
+          <div class="message-content">
+            <div class="message-bubble">
+              Good morning, Professor! I've completed the research phase and drafted about 60% of the report. I have a few questions about the methodology section.
+            </div>
+            <div class="message-info">
+              <span>9:20 AM</span>
+              <div class="message-status">✓✓</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="message">
+          <img src="/api/placeholder/36/36" alt="avatar" class="message-avatar">
+          <div class="message-content">
+            <div class="message-bubble">
+              That sounds great! I've attached my notes on methodology approaches that might help. Let's schedule a video call to discuss it in more detail.
+            </div>
+            <div class="file-attachment">
+              <div class="file-icon">PDF</div>
+              <div class="file-details">
+                <div class="file-name">Methodology_Guidelines.pdf</div>
+                <div class="file-size">2.4 MB</div>
+              </div>
+            </div>
+            <div class="message-info">
+              <span>Prof. Sarah Wilson</span>
+              <span class="message-time">9:28 AM</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="message outgoing">
+          <img src="/api/placeholder/36/36" alt="avatar" class="message-avatar">
+          <div class="message-content">
+            <div class="message-bubble">
+              Thank you for the document! A video call would be perfect. Would tomorrow at 10:30 AM work for you?
+            </div>
+            <div class="message-info">
+              <span>9:35 AM</span>
+              <div class="message-status">✓✓</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="date-divider">
+          <span>Today, February 25, 2025</span>

@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Attendance Management Module</title>
+  <style>
+    :root {
+      --primary: #2A5C8A;
+      --secondary: #4CAF50;
+      --alert: #FF5252;
+      --neutral: #F5F5F5;
+      --dark-neutral: #E0E0E0;
+      --text: #333333;
+      --white: #FFFFFF;
+      --late: #FFC107;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      color: var(--text);
+      background-color: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    
+    header {
+      background-color: var(--white);
+      padding: 15px 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .logo {
+      font-weight: bold;
+      color: var(--primary);
+      font-size: 20px;
+    }
+    
+    .date-picker, .class-selector, .search-bar {
+      padding: 8px 12px;
+      border: 1px solid var(--dark-neutral);
+      border-radius: 4px;
+      background-color: var(--white);
+    }
+    
+    .search-bar {
+      display: flex;
+      align-items: center;
+      width: 250px;
+    }
+    
+    .search-bar input {
+      border: none;
+      outline: none;
+      width: 100%;
+      padding: 0 8px;
+    }
+    
+    .notification-icon, .settings-icon {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      cursor: pointer;
+      color: var(--primary);
+    }
+    
+    .notification-icon:hover, .settings-icon:hover {
+      background-color: var(--neutral);
+    }
+    
+    main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    
+    .left-panel, .center-panel, .right-panel {
+      overflow-y: auto;
+    }
+    
+    /* Custom scrollbar for WebKit browsers */
+    .left-panel::-webkit-scrollbar,
+    .center-panel::-webkit-scrollbar,
+    .right-panel::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    .left-panel::-webkit-scrollbar-thumb,
+    .center-panel::-webkit-scrollbar-thumb,
+    .right-panel::-webkit-scrollbar-thumb {
+      background-color: var(--dark-neutral);
+      border-radius: 4px;
+    }
+    
+    .left-panel {
+      width: 250px;
+      background-color: var(--white);
+      padding: 20px;
+      border-right: 1px solid var(--dark-neutral);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .filter-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .filter-title {
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 5px;
+    }
+    
+    .filter-option {
+      padding: 8px 12px;
+      background-color: var(--neutral);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .filter-option:hover, .filter-option.active {
+      background-color: var(--dark-neutral);
+      color: var(--white);
+    }
+    
+    .center-panel {
+      flex: 1;
+      padding: 20px;
+    }
+    
+    .attendance-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    
+    .panel-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .action-btn {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    
+    .primary-btn {
+      background-color: var(--primary);
+      color: white;
+    }
+    
+    .primary-btn:hover {
+      background-color: #234b71;
+    }
+    
+    .secondary-btn {
+      background-color: var(--neutral);
+      color: var(--text);
+    }
+    
+    .secondary-btn:hover {
+      background-color: var(--dark-neutral);
+    }
+    
+    .attendance-grid {
+      background-color: var(--white);
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .grid-header {
+      display: grid;
+      grid-template-columns: 50px 2fr 1fr 2fr 2fr;
+      padding: 15px;
+      font-weight: 600;
+      border-bottom: 1px solid var(--dark-neutral);
+    }
+    
+    .student-row {
+      display: grid;
+      grid-template-columns: 50px 2fr 1fr 2fr 2fr;
+      padding: 12px 15px;
+      align-items: center;
+      border-bottom: 1px solid var(--neutral);
+      transition: all 0.2s;
+    }
+    
+    .student-row:hover {
+      background-color: var(--neutral);
+    }
+    
+    .student-photo {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    
+    .student-name {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .student-details {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .roll-number {
+      font-size: 14px;
+      color: #777;
+    }
+    
+    .status-selector {
+      display: flex;
+      gap: 5px;
+    }
+    
+    .status-btn {
+      padding: 6px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+    
+    .present-btn {
+      background-color: var(--secondary);
+      color: white;
+    }
+    
+    .absent-btn {
+      background-color: var(--alert);
+      color: white;
+    }
+    
+    .late-btn {
+      background-color: var(--late);
+      color: white;
+    }
+    
+    .status-btn.active {
+      outline: 2px solid var(--primary);
+    }
+    
+    .remarks-input {
+      padding: 6px 10px;
+      border: 1px solid var(--dark-neutral);
+      border-radius: 4px;
+      width: 100%;
+    }
+    
+    .right-panel {
+      width: 300px;
+      background-color: var(--white);
+      padding: 20px;
+      border-left: 1px solid var(--dark-neutral);
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+    
+    .stats-section {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .attendance-chart {
+      height: 180px;
+      background-color: var(--neutral);
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .chart-slice {
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%, 50% 100%);
+      background-color: var(--secondary);
+    }
+    
+    .chart-center {
+      position: absolute;
+      height: 120px;
+      width: 120px;
+      background-color: white;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1;
+    }
+    
+    .stats-percentage {
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    
+    .stats-label {
+      font-size: 14px;
+      color: #777;
+    }
+    
+    .quick-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .action-card {
+      padding: 12px;
+      background-color: var(--neutral);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .action-card:hover {
+      background-color: var(--dark-neutral);
+    }
+    
+    .action-icon {
+      width: 32px;
+      height: 32px;
+      background-color: var(--primary);
+      border-radius: 6px;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .action-details {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .action-title {
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    .action-desc {
+      font-size: 12px;
+      color: #777;
+    }
+    
+    .calendar-view {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+    }
+    
+    .calendar-day {
+      aspect-ratio: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: var(--neutral);
+      border-radius: 4px;
+      font-size: 12px;
+      position: relative;
+    }
+    
+    .day-name {
+      font-weight: 600;
+      color: var(--primary);
+    }
+    
+    .day-present {
+      background-color: rgba(76, 175, 80, 0.3);
+    }
+    
+    .day-absent {
+      background-color: rgba(255, 82, 82, 0.3);
+    }
+    
+    .day-holiday {
+      background-color: #eee;
+      color: #999;
+    }
+    
+    .day-indicator {
+      position: absolute;
+      bottom: 2px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+    }
+    
+    .present-indicator {
+      background-color: var(--secondary);
+    }
+    
+    .absent-indicator {
+      background-color: var(--alert);
+    }
+    
+    .partial-indicator {
+      background-color: var(--late);
+    }
+    
+    @media (max-width: 1200px) {
+      .right-panel {
+        width: 250px;
+      }
+    }
+    
+    @media (max-width: 992px) {
+      .left-panel {
+        width: 200px;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      main {
+        flex-direction: column;
+      }
+      
+      .left-panel, .right-panel {
+        width: 100%;
+        border: none;
+        padding: 10px;
+      }
+    }
+  </style>
+  
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <header>
+    <div class="header-left">
+      <div class="logo">EduERP</div>
+      <div class="date-picker">Feb 25, 2025</div>
+      <div class="class-selector">Class X-A (Mathematics)</div>
+    </div>
+    <div class="header-right">
+      <div class="search-bar">
+        <span>🔍</span>
+        <input type="text" placeholder="Search for student..." />
+      </div>
+      <div class="notification-icon">🔔</div>
+      <div class="settings-icon">⚙️</div>
+    </div>
+  </header>
+  
+  <main>
+    <div class="left-panel">
+      <div class="filter-section">
+        <div class="filter-title">Date Filter</div>
+        <div class="filter-option">Today</div>
+        <div class="filter-option">Yesterday</div>
+        <div class="filter-option">This Week</div>
+        <div class="filter-option">Custom Range</div>
+      </div>
+      
+      <div class="filter-section">
+        <div class="filter-title">Class Filter</div>
+        <div class="filter-option">Class X-A</div>
+        <div class="filter-option">Class X-B</div>
+        <div class="filter-option">Class X-C</div>
+      </div>
+      
+      <div class="filter-section">
+        <div class="filter-title">Subject Filter</div>
+        <div class="filter-option">Mathematics</div>
+        <div class="filter-option">Science</div>
+        <div class="filter-option">English</div>
+        <div class="filter-option">History</div>
+      </div>
+    </div>
+    
+    <div class="center-panel">
+      <div class="attendance-header">
+        <div class="panel-title">Class X-A Attendance</div>
+        <div class="action-buttons">
+          <button class="action-btn secondary-btn" id="copyPreviousBtn">Copy Previous</button>
+          <button class="action-btn secondary-btn" id="markAllPresentBtn">Mark All Present</button>
+          <button class="action-btn primary-btn" id="saveAttendanceBtn">Save</button>
+        </div>
+      </div>
+      
+      <div class="attendance-grid">
+        <div class="grid-header">
+          <div>Photo</div>
+          <div>Student Name</div>
+          <div>Roll No</div>
+          <div>Status</div>
+          <div>Remarks</div>
+        </div>
+        
+        <!-- Example student rows -->
+        <div class="student-row">
+          <div>
+            <img src="/api/placeholder/36/36" alt="Student Photo" class="student-photo" />
+          </div>
+          <div class="student-name">
+            <div class="student-details">
+              <div>Aiden Mitchell</div>
+              <div class="roll-number">SC1001</div>
+            </div>
+          </div>
+          <div>R001</div>
+          <div class="status-selector">
+            <button class="status-btn present-btn" data-status="present">Present</button>
+            <button class="status-btn absent-btn" data-status="absent">Absent</button>
+            <button class="status-btn late-btn" data-status="late">Late</button>
+          </div>
+          <div>
+            <input type="text" class="remarks-input" placeholder="Add remarks..." />
+          </div>
+        </div>
+        
+        <div class="student-row">
+          <div>
+            <img src="/api/placeholder/36/36" alt="Student Photo" class="student-photo" />
+          </div>
+          <div class="student-name">
+            <div class="student-details">
+              <div>Brian Johnson</div>
+              <div class="roll-number">SC1002</div>
+            </div>
+          </div>
+          <div>R002</div>
+          <div class="status-selector">
+            <button class="status-btn present-btn" data-status="present">Present</button>
+            <button class="status-btn absent-btn" data-status="absent">Absent</button>
+            <button class="status-btn late-btn" data-status="late">Late</button>
+          </div>
+          <div>
+            <input type="text" class="remarks-input" placeholder="Add remarks..." />
+          </div>
+        </div>
+        
+        <div class="student-row">
+          <div>
+            <img src="/api/placeholder/36/36" alt="Student Photo" class="student-photo" />
+          </div>
+          <div class="student-name">
+            <div class="student-details">
+              <div>Emily Watson</div>
+              <div class="roll-number">SC1003</div>
+            </div>
+          </div>
+          <div>R003</div>
+          <div class="status-selector">
+            <button class="status-btn present-btn" data-status="present">Present</button>
+            <button class="status-btn absent-btn" data-status="absent">Absent</button>
+            <button class="status-btn late-btn" data-status="late">Late</button>
+          </div>
+          <div>
+            <input type="text" class="remarks-input" placeholder="Add remarks..." />
+          </div>
+        </div>
+        
+        <div class="student-row">
+          <div>
+            <img src="/api/placeholder/36/36" alt="Student Photo" class="student-photo" />
+          </div>
+          <div class="student-name">
+            <div class="student-details">
+              <div>Sophie Anderson</div>
+              <div class="roll-number">SC1004</div>
+            </div>
+          </div>
+          <div>R004</div>
+          <div class="status-selector">
+            <button class="status-btn present-btn" data-status="present">Present</button>
+            <button class="status-btn absent-btn" data-status="absent">Absent</button>
+            <button class="status-btn late-btn" data-status="late">Late</button>
+          </div>
+          <div>
+            <input type="text" class="remarks-input" placeholder="Add remarks..." />
+          </div>
+        </div>
+        
+        <div class="student-row">
+          <div>
+            <img src="/api/placeholder/36/36" alt="Student Photo" class="student-photo" />
+          </div>
+          <div class="student-name">
+            <div class="student-details">
+              <div>David Chen</div>
+              <div class="roll-number">SC1005</div>
+            </div>
+          </div>
+          <div>R005</div>
+          <div class="status-selector">
+            <button class="status-btn present-btn" data-status="present">Present</button>
+            <button class="status-btn absent-btn" data-status="absent">Absent</button>
+            <button class="status-btn late-btn" data-status="late">Late</button>
+          </div>
+          <div>
+            <input type="text" class="remarks-input" placeholder="Add remarks..." />
+          </div>
+        </div>
+        
+        <div class="student-row">
+          <div>
+            <img src="/api/placeholder/36/36" alt="Student Photo" class="student-photo" />
+          </div>
+          <div class="student-name">
+            <div class="student-details">
+              <div>Lucy Martinez</div>
+              <div class="roll-number">SC1006</div>
+            </div>
+          </div>
+          <div>R006</div>
+          <div class="status-selector">
+            <button class="status-btn present-btn" data-status="present">Present</button>
+            <button class="status-btn absent-btn" data-status="absent">Absent</button>
+            <button class="status-btn late-btn" data-status="late">Late</button>
+          </div>
+          <div>
+            <input type="text" class="remarks-input" placeholder="Add remarks..." />
+          </div>
+        </div>
+        
+        <div class="student-row">
+          <div>
+            <img src="/api/placeholder/36/36" alt="Student Photo" class="student-photo" />
+          </div>
+          <div class="student-name">
+            <div class="student-details">
+              <div>Ryan Thompson</div>
+              <div class="roll-number">SC1007</div>
+            </div>
+          </div>
+          <div>R007</div>
+          <div class="status-selector">
+            <button class="status-btn present-btn" data-status="present">Present</button>
+            <button class="status-btn absent-btn" data-status="absent">Absent</button>
+            <button class="status-btn late-btn" data-status="late">Late</button>
+          </div>
+          <div>
+            <input type="text" class="remarks-input" placeholder="Add remarks..." />
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="right-panel">
+      <div class="stats-section">
+        <div class="panel-title">Today's Stats</div>
+        <div class="attendance-chart">
+          <div class="chart-slice"></div>
+          <div class="chart-center">
+            <div class="stats-percentage">87%</div>
+            <div class="stats-label">Present</div>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <div>
+            <div style="font-weight: 600;">32/37</div>
+            <div style="font-size: 12px; color: #777;">Students Present</div>
+          </div>
+          <div>
+            <div style="font-weight: 600;">3/37</div>
+            <div style="font-size: 12px; color: #777;">Students Late</div>
+          </div>
+          <div>
+            <div style="font-weight: 600;">2/37</div>
+            <div style="font-size: 12px; color: #777;">Students Absent</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="quick-actions">
+        <div class="panel-title">Quick Actions</div>
+        <div class="action-card" data-action="report">
+          <div class="action-icon">📊</div>
+          <div class="action-details">
+            <div class="action-title">Generate Report</div>
+            <div class="action-desc">Export in PDF/Excel format</div>
+          </div>
+        </div>
+        <div class="action-card" data-action="notify">
+          <div class="action-icon">📱</div>
+          <div class="action-details">
+            <div class="action-title">Send Notifications</div>
+            <div class="action-desc">Alert parents about absences</div>
+          </div>
+        </div>
+        <div class="action-card" data-action="analyze">
+          <div class="action-icon">🔍</div>
+          <div class="action-details">
+            <div class="action-title">Analyze Patterns</div>
+            <div class="action-desc">Identify attendance trends</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="calendar-section">
+        <div class="panel-title">February 2025</div>
+        <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+          <span class="day-name">S</span>
+          <span class="day-name">M</span>
+          <span class="day-name">T</span>
+          <span class="day-name">W</span>
+          <span class="day-name">T</span>
+          <span class="day-name">F</span>
+          <span class="day-name">S</span>
+        </div>
+        <div class="calendar-view">
+          <div class="calendar-day day-holiday">26</div>
+          <div class="calendar-day day-holiday">27</div>
+          <div class="calendar-day day-holiday">28</div>
+          <div class="calendar-day day-holiday">29</div>
+          <div class="calendar-day day-holiday">30</div>
+          <div class="calendar-day day-holiday">31</div>
+          <div class="calendar-day day-present">1</div>
+          <div class="calendar-day day-present">2</div>
+          <div class="calendar-day day-present">3</div>
+          <div class="calendar-day day-present">4</div>
+          <div class="calendar-day day-present">5</div>
+          <div class="calendar-day day-present">6</div>
+          <div class="calendar-day day-present">7</div>
+          <div class="calendar-day day-present">8</div>
+          <div class="calendar-day day-absent">9</div>
+          <div class="calendar-day day-present">10</div>
+          <div class="calendar-day day-present">11</div>
+          <div class="calendar-day day-present">12</div>
+          <div class="calendar-day day-holiday">13</div>
+          <div class="calendar-day day-holiday">14</div>
+          <div class="calendar-day day-present">15</div>
+          <div class="calendar-day day-present">16</div>
+          <div class="calendar-day day-present">17</div>
+          <div class="calendar-day day-present">18</div>
+          <div class="calendar-day day-present">19</div>
+          <div class="calendar-day day-present">20</div>
+          <div class="calendar-day day-present">21</div>
+          <div class="calendar-day day-present">22</div>
+          <div class="calendar-day day-present">23</div>
+          <div class="calendar-day day-present">24</div>
+          <div class="calendar-day" style="background-color: rgba(42, 92, 138, 0.2);">25</div>
+          <div class="calendar-day">26</div>
+          <div class="calendar-day">27</div>
+          <div class="calendar-day">28</div>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <!-- Firebase and Button Functionality Script -->
+  <script>
+    // Initialize Firebase (replace with your actual config)
+    const firebaseConfig = {
+        apiKey: "AIzaSyCVLnRuK3p1wwazi-mmFGcMLi5YyBKLru4",
+  authDomain: "education-ce757.firebaseapp.com",
+  projectId: "education-ce757",
+  storageBucket: "education-ce757.appspot.com",
+  messagingSenderId: "235451837896",
+  appId: "1:235451837896:web:081aab2ede42d6a740e4fd",
+  measurementId: "G-HY9K0P941Y"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      // FILTERS: Attach event listeners for each filter option
+      document.querySelectorAll('.filter-option').forEach(option => {
+        option.addEventListener('click', function() {
+          // Remove active class from sibling options
+          let siblings = option.parentElement.querySelectorAll('.filter-option');
+          siblings.forEach(sib => sib.classList.remove('active'));
+          option.classList.add('active');
+          console.log("Filter applied: " + option.textContent.trim());
+          // Here you can add code to actually filter your attendance grid
+        });
+      });
+      
+      // STATUS BUTTONS: When a status button is clicked, mark it as active and store the value in the row's data-status
+      document.querySelectorAll('.status-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          const row = btn.closest('.student-row');
+          row.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          row.dataset.status = btn.dataset.status;
+        });
+      });
+      
+      // Copy Previous Attendance (simulation)
+      document.getElementById('copyPreviousBtn').addEventListener('click', function() {
+        // You could fetch previous data from Firestore and populate rows here
+        alert("Copied previous attendance record (simulation).");
+      });
+      
+      // Mark All Present: Simulate a click on the "Present" button for every row
+      document.getElementById('markAllPresentBtn').addEventListener('click', function() {
+        document.querySelectorAll('.student-row').forEach(row => {
+          const presentBtn = row.querySelector('.status-btn.present-btn');
+          if (presentBtn) {
+            presentBtn.click();
+          }
+        });
+      });
+      
+      // Save Attendance: Gather data from each student row and write to Firestore
+      document.getElementById('saveAttendanceBtn').addEventListener('click', function() {
+        const attendanceData = [];
+        document.querySelectorAll('.student-row').forEach(row => {
+          const nameElem = row.querySelector('.student-name .student-details div:first-child');
+          const rollElem = row.querySelector('.student-name .student-details div:nth-child(2)');
+          const studentName = nameElem ? nameElem.textContent.trim() : "";
+          const rollNumber = rollElem ? rollElem.textContent.trim() : "";
+          const status = row.dataset.status || "";
+          const remarks = row.querySelector('.remarks-input').value.trim();
+          attendanceData.push({ studentName, rollNumber, status, remarks });
+        });
+        const date = document.querySelector('.date-picker').textContent.trim();
+        const classInfo = document.querySelector('.class-selector').textContent.trim();
+        // Create a document ID by sanitizing date and class strings
+        const recordId = `${date.replace(/[, ]/g, "_")}_${classInfo.replace(/[^a-zA-Z0-9]/g, "_")}`;
+        
+        console.log("Saving attendance with ID:", recordId);
+        console.log("Attendance Data:", attendanceData);
+        
+        db.collection("attendance").doc(recordId).set({
+          date,
+          classInfo,
+          attendance: attendanceData,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        })
+        .then(() => {
+          alert("Attendance saved successfully!");
+        })
+        .catch(error => {
+          console.error("Error saving attendance: ", error);
+          alert("Failed to save attendance: " + error.message);
+        });
+      });
+      
+      // QUICK ACTIONS: Attach event listeners to quick action cards
+      document.querySelectorAll('.action-card').forEach(card => {
+        card.addEventListener('click', function() {
+          const action = card.dataset.action;
+          if (action === "report") {
+            // Simulate report generation
+            alert("Report generated (simulation).");
+          } else if (action === "notify") {
+            // Simulate sending notifications
+            alert("Notifications sent (simulation).");
+          } else if (action === "analyze") {
+            // Simulate analysis of attendance patterns
+            alert("Attendance patterns analyzed (simulation).");
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

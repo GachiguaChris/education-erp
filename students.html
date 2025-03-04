@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Dashboard - EduERP</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    /* Base Styles */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #f5f5f5;
+      color: #333;
+    }
+    a { text-decoration: none; color: inherit; }
+    
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 220px;
+      height: 100vh;
+      background: #2c3e50;
+      color: white;
+      padding-top: 20px;
+      overflow-y: auto; /* Added scrollbar */
+    }
+    .sidebar .logo {
+      text-align: center;
+      font-size: 1.5rem;
+      margin-bottom: 30px;
+    }
+    .sidebar .logo i { margin-right: 10px; }
+    .nav-menu { list-style: none; padding: 0; }
+    .nav-menu .nav-item {
+      padding: 15px 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: background 0.3s;
+    }
+    .nav-menu .nav-item i { margin-right: 10px; }
+    .nav-menu .nav-item:hover,
+    .nav-menu .nav-item.active { background: #34495e; }
+    /* External links in sidebar */
+    .nav-menu .nav-item a {
+      display: block;
+      width: 100%;
+      height: 100%;
+      color: inherit;
+    }
+    
+    /* Main Content */
+    .main-content {
+      margin-left: 240px;
+      padding: 20px;
+    }
+    
+    /* Section Management */
+    .content-section { display: none; animation: fadeIn 0.3s ease; }
+    .content-section.active { display: block; }
+    
+    /* Card & Container Styles */
+    .card {
+      background: white;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .card-container .card {
+      flex: 1 1 calc(25% - 15px);
+      min-width: 220px;
+    }
+    
+    /* Headers */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .header h1 { font-size: 1.8rem; }
+    
+    /* Table Styles (Unit Registration & Grades) */
+    #unitsTable, #generatedGradesTable {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    #unitsTable th, #unitsTable td,
+    #generatedGradesTable th, #generatedGradesTable td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    #unitsTable th, #generatedGradesTable th {
+      background: #2c3e50;
+      color: white;
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar Navigation -->
+  <div class="sidebar">
+    <div class="logo">
+      <i class="fas fa-graduation-cap"></i> EduERP
+    </div>
+    <ul class="nav-menu">
+      <li class="nav-item" onclick="showSection('dashboard')">
+        <i class="fas fa-home"></i> Dashboard
+      </li>
+      <li class="nav-item" onclick="showSection('timetable')">
+        <i class="fas fa-calendar-alt"></i> Timetable
+      </li>
+      <li class="nav-item" onclick="showSection('courses')">
+        <i class="fas fa-book-open"></i> Courses
+      </li>
+      <li class="nav-item" onclick="showSection('grades')">
+        <i class="fas fa-chart-bar"></i> Grades
+      </li>
+      <li class="nav-item" onclick="showSection('assignments')">
+        <i class="fas fa-tasks"></i> Assignments
+      </li>
+      <li class="nav-item" onclick="showSection('notes')">
+        <i class="fas fa-sticky-note"></i> Notes
+      </li>
+      <li class="nav-item" onclick="showSection('profile')">
+        <i class="fas fa-user"></i> Profile
+      </li>
+      <li class="nav-item" onclick="showSection('resources')">
+        <i class="fas fa-folder-open"></i> Resources
+      </li>
+      <!-- External Links -->
+      <li class="nav-item">
+        <a href="attendance.html">
+          <i class="fas fa-check-circle"></i> Attendance
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="finance.html">
+          <i class="fas fa-dollar-sign"></i> Finance
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="chat.html">
+          <i class="fas fa-comments"></i> Chat
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="main-content">
+    <!-- Dashboard Section -->
+    <div id="dashboard" class="content-section active">
+      <div class="header">
+        <h1>Welcome, Sarah!</h1>
+      </div>
+      <!-- Dashboard Details: Four Containers -->
+      <div class="card-container">
+        <div class="card">
+          <h2><i class="fas fa-bullhorn"></i> Announcements</h2>
+          <p><strong>Exam Schedule:</strong> Released. Check dates!</p>
+          <p><strong>Resource Update:</strong> New Math Lecture Notes.</p>
+        </div>
+        <div class="card">
+          <h2><i class="fas fa-calendar-alt"></i> Upcoming Classes</h2>
+          <p><strong>CS Lab:</strong> 10:00 AM Tomorrow</p>
+          <p><strong>History:</strong> 1:00 PM Today</p>
+        </div>
+        <div class="card">
+          <h2><i class="fas fa-chart-line"></i> Performance</h2>
+          <p>Grade Average: <strong>3.7</strong></p>
+          <p>Attendance: <strong>95%</strong></p>
+        </div>
+        <div class="card">
+          <h2><i class="fas fa-link"></i> Quick Links</h2>
+          <p><a href="#assignments">View Assignments</a></p>
+          <p><a href="#notes">View Notes</a></p>
+        </div>
+      </div>
+      <!-- New Card: Unit Registration -->
+      <div class="card">
+        <h2>Register Your Units</h2>
+        <table id="unitsTable">
+          <thead>
+            <tr>
+              <th>Select</th>
+              <th>Unit Code</th>
+              <th>Unit Title</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><label><input type="checkbox" value="MATH101" title="Select Calculus I"></label></td>
+              <td>MATH101</td>
+              <td>Calculus I</td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox" value="CS102" title="Select Introduction to Programming"></label></td>
+              <td>CS102</td>
+              <td>Introduction to Programming</td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox" value="HIST201" title="World History"></label></td>
+              <td>HIST201</td>
+              <td>World History</td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox" value="PHYS101" title="Physics Fundamentals"></label></td>
+              <td>PHYS101</td>
+              <td>Physics Fundamentals</td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox" value="CHEM101" title="General Chemistry"></label></td>
+              <td>CHEM101</td>
+              <td>General Chemistry</td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox" value="ENG102" title="English Composition"></label></td>
+              <td>ENG102</td>
+              <td>English Composition</td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox" value="BIO103" title="Biology Basics"></label></td>
+              <td>BIO103</td>
+              <td>Biology Basics</td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox" value="ECON104" title="Introduction to Economics"></label></td>
+              <td>ECON104</td>
+              <td>Introduction to Economics</td>
+            </tr>
+          </tbody>
+        </table>
+        <button id="confirmUnitsButton">Confirm Registration</button>
+      </div>
+      <!-- Container for Generated Grades Table -->
+      <div id="gradesTableContainer"></div>
+    </div>
+
+    <!-- Timetable Section -->
+    <div id="timetable" class="content-section">
+      <div class="header">
+        <h1>Weekly Schedule</h1>
+        <div class="week-navigation">
+          <button class="btn" onclick="alert('Previous Week')"><i class="fas fa-chevron-left"></i></button>
+          <span>March 18-24, 2024</span>
+          <button class="btn" onclick="alert('Next Week')"><i class="fas fa-chevron-right"></i></button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Your Classes</h2>
+        <ul>
+          <li><strong>Math 101</strong> - Room 205 - 9:00 AM</li>
+          <li><strong>Computer Science</strong> - Lab 3 - 10:00 AM</li>
+          <li><strong>History</strong> - Room 110 - 1:00 PM</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>Upload Timetable File</h2>
+        <form class="upload-form" id="timetableForm">
+          <input type="file" id="timetableUpload" accept=".pdf,.doc,.docx,.jpg,.png" required>
+          <button type="submit">Upload Timetable</button>
+        </form>
+        <ul class="file-list" id="uploadedTimetableList"></ul>
+      </div>
+      <!-- Additional Timetable Details: Four Containers -->
+      <div class="card-container">
+        <div class="card">
+          <h2><i class="fas fa-sun"></i> Today's Schedule</h2>
+          <p>Math 101 at 9:00 AM</p>
+          <p>History at 1:00 PM</p>
+        </div>
+        <div class="card">
+          <h2><i class="fas fa-calendar-check"></i> This Week Overview</h2>
+          <p>Total Classes: <strong>15</strong></p>
+          <p>Completed: 10</p>
+        </div>
+        <div class="card">
+          <h2><i class="fas fa-bell"></i> Next Class</h2>
+          <p>Computer Science at 10:00 AM</p>
+        </div>
+        <div class="card">
+          <h2><i class="fas fa-list-alt"></i> Class Count</h2>
+          <p>Ongoing: <strong>3</strong></p>
+          <p>Upcoming: <strong>2</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Courses Section -->
+    <div id="courses" class="content-section">
+      <h1>My Courses</h1>
+      <div class="card">
+        <ul>
+          <li><strong>Mathematics 101</strong> - Instructor: Prof. Adams</li>
+          <li><strong>Computer Science</strong> - Instructor: Dr. Lee</li>
+          <li><strong>History</strong> - Instructor: Ms. Clark</li>
+        </ul>
+      </div>
+      <!-- Additional Course Details: Four Containers -->
+      <div class="card-container">
+        <div class="card">
+          <h2><i class="fas fa-book"></i> Ongoing Courses</h2>
+          <p>Mathematics 101</p>
+          <p>Computer Science</p>
+        </div>
+        <div class="card">
+          <h2><i class="fas fa-clock"></i> Upcoming Courses</h2>
+          <p>Physics 201</p>
+          <p>Chemistry 101</p>
+        </div>
+        <div class="card">
+          <h2><i class="fas fa-check"></i> Completed Courses</h2>
+          <p>History 101</p>
+        </div>
+        <div class="card">
+          <h2><i class="fas fa-info-circle"></i> Updates</h2>
+          <p>New syllabus available</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grades Section -->
+    <div id="grades" class="content-section">
+      <h1>Gradebook</h1>
+      <div class="card grade-table">
+        <table>
+          <tr>
+            <th>Subject</th>
+            <th>Mid-Term</th>
+            <th>Final Exam</th>
+            <th>GPA</th>
+          </tr>
+          <tr>
+            <td>Mathematics</td>
+            <td>A</td>
+            <td>A-</td>
+            <td>3.7</td>
+          </tr>
+          <tr>
+            <td>Computer Science</td>
+            <td>B+</td>
+            <td>A</td>
+            <td>3.8</td>
+          </tr>
+          <tr>
+            <td>History</td>
+            <td>A-</td>
+            <td>B+</td>
+            <td>3.5</td>
+          </tr>
+        </table>
+      </div>
+      <!-- Additional Grade Details: Four Containers -->
+      <div class="card-container">
+        <div class="card">
+          <h2><i class="fas fa-star"></i> Top Subject</h2>
+          <p>Computer Science: A</p>
+        </div>
+        <div class="card">
+          <h2><i class="fas fa-chart-pie"></i> Overall GPA</h2>
+          <p>Average: <strong>3.7</strong></p>
+        </div>
+        <div class="card">
+          <h2><i class="fas fa-trophy"></i> Best Performance</h2>
+          <p>Math: A</p>
+        </div>
+        <div class="card">
+          <h2><i class="fas fa-info"></i> Feedback</h2>
+          <p>Check teacher comments</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Assignments Section -->
+    <div id="assignments" class="content-section">
+      <h1>Assignments</h1>
+      <div class="card">
+        <h2>Upload Assignment</h2>
+        <form class="upload-form" id="assignmentForm">
+          <input type="file" id="assignmentUpload" accept=".pdf,.doc,.docx,.jpg,.png" required>
+          <button type="submit">Upload Assignment</button>
+        </form>
+        <ul class="file-list" id="uploadedAssignmentList"></ul>
+      </div>
+      <!-- Additional Assignment Details: Four Containers -->
+      <div class="card-container">
+        <div class="card">
+          <h2><i class="fas fa-tasks"></i> Pending</h2>
+          <p>Math Problem Set</p>
+        </div>
+        <div class="card">
+          <h2><i class="fas fa-check"></i> Submitted</h2>
+          <p>CS Project</p>
+        </div>
+        <div class="card">
+          <h2><i class="fas fa-star"></i> Graded</h2>
+          <p>History Essay: B+</p>
+        </div>
+        <div class="card">
+          <h2><i class="fas fa-clock"></i> Deadlines</h2>
+          <p>Next: March 28</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notes Section -->
+    <div id="notes" class="content-section">
+      <h1>Notes</h1>
+      <div class="card">
+        <h2>Upload Notes</h2>
+        <form class="upload-form" id="notesForm">
+          <input type="file" id="notesUpload" accept=".pdf,.doc,.docx,.ppt,.pptx,.jpg,.png" required>
+          <button type="submit">Upload Notes</button>
+        </form>
+        <ul class="file-list" id="uploadedNotesList"></ul>
+      </div>
+      <!-- Additional Notes Details: Four Containers -->
+      <div class="card-container">
+        <div class="card">
+          <h2><i class="fas fa-upload"></i> Recent</h2>
+          <p>Math Lecture 1</p>
+        </div>
+        <div class="card">
+          <h2><i class="fas fa-eye"></i> Popular</h2>
+          <p>CS Algorithms</p>
+        </div>
+        <div class="card">
+          <h2><i class="fas fa-thumbs-up"></i> Recommended</h2>
+          <p>History Overview</p>
+        </div>
+        <div class="card">
+          <h2><i class="fas fa-file-alt"></i> All Notes</h2>
+          <p>View More...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Section -->
+    <div id="profile" class="content-section">
+      <div class="profile-section">
+        <div class="avatar-upload">
+          <img src="avatar.jpg" alt="Profile" />
+          <input type="file" hidden accept="image/*" />
+        </div>
+        <div class="profile-info">
+          <h2>Sarah Johnson</h2>
+          <form id="profileForm">
+            <label>Email:</label>
+            <input type="email" value="sarah@university.edu" />
+            <label>Phone:</label>
+            <input type="tel" value="+1 234 567 890" />
+            <button type="submit">Update Profile</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resources Section -->
+    <div id="resources" class="content-section">
+      <h1>Course Materials</h1>
+      <div class="resource-cards">
+        <div class="course-card card">
+          <h3><i class="fas fa-file-pdf"></i> Mathematics 101</h3>
+          <div class="resource-list">
+            <div class="resource-item">
+              <span>Chapter 5 Notes.pdf</span>
+              <button class="download-btn" onclick="alert('Downloading...')">Download</button>
+            </div>
+            <div class="resource-item">
+              <span><i class="fas fa-file-powerpoint"></i> Lecture Slides.ppt</span>
+              <button class="download-btn" onclick="alert('Downloading...')">Download</button>
+            </div>
+          </div>
+        </div>
+        <div class="course-card card">
+          <h3><i class="fas fa-file-pdf"></i> Computer Science</h3>
+          <div class="resource-list">
+            <div class="resource-item">
+              <span>Project Guidelines.pdf</span>
+              <button class="download-btn" onclick="alert('Downloading...')">Download</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Section -->
+  <script>
+    // Section Management for internal sections (external links use standard anchors)
+    function showSection(sectionId) {
+      document.querySelectorAll('.content-section').forEach(section => {
+        section.classList.remove('active');
+      });
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      document.getElementById(sectionId).classList.add('active');
+      event.currentTarget.classList.add('active');
+    }
+    
+    // Upload Handler Function: Create clickable link for uploaded file
+    function handleUpload(formId, inputId, listId) {
+      document.getElementById(formId).addEventListener('submit', function(e) {
+        e.preventDefault();
+        const fileInput = document.getElementById(inputId);
+        if (fileInput.files.length > 0) {
+          const file = fileInput.files[0];
+          const fileURL = URL.createObjectURL(file);
+          const list = document.getElementById(listId);
+          const listItem = document.createElement('li');
+          listItem.innerHTML = `<a href="${fileURL}" target="_blank">${file.name}</a>`;
+          list.appendChild(listItem);
+          alert(`File "${file.name}" uploaded successfully!`);
+          fileInput.value = "";
+        }
+      });
+    }
+    
+    // Initialize file upload handlers for each category
+    handleUpload('timetableForm', 'timetableUpload', 'uploadedTimetableList');
+    handleUpload('assignmentForm', 'assignmentUpload', 'uploadedAssignmentList');
+    handleUpload('notesForm', 'notesUpload', 'uploadedNotesList');
+    
+    // Profile Update Handling
+    document.getElementById('profileForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      alert('Profile updated successfully!');
+    });
+    
+    // Unit Registration: Generate Grades Table for Selected Units
+    document.getElementById('confirmUnitsButton').addEventListener('click', function() {
+      const table = document.getElementById('unitsTable');
+      const checkboxes = table.querySelectorAll("input[type='checkbox']");
+      let selectedUnits = [];
+      checkboxes.forEach(function(cb) {
+        if (cb.checked) { selectedUnits.push(cb.value); }
+      });
+      if (selectedUnits.length === 0) {
+        alert("Please select at least one unit to register.");
+        return;
+      }
+      // Generate Grades Table with random grades
+      const possibleGrades = ["A", "A-", "B+", "B", "B-", "C+", "C", "D", "F"];
+      let gradesTable = document.createElement("table");
+      gradesTable.id = "generatedGradesTable";
+      let headerRow = document.createElement("tr");
+      let th1 = document.createElement("th");
+      th1.textContent = "Unit Code";
+      let th2 = document.createElement("th");
+      th2.textContent = "Grade";
+      headerRow.appendChild(th1);
+      headerRow.appendChild(th2);
+      gradesTable.appendChild(headerRow);
+      selectedUnits.forEach(function(unit) {
+        let row = document.createElement("tr");
+        let cell1 = document.createElement("td");
+        cell1.textContent = unit;
+        let cell2 = document.createElement("td");
+        let randomGrade = possibleGrades[Math.floor(Math.random() * possibleGrades.length)];
+        cell2.textContent = randomGrade;
+        row.appendChild(cell1);
+        row.appendChild(cell2);
+        gradesTable.appendChild(row);
+      });
+      const container = document.getElementById("gradesTableContainer");
+      container.innerHTML = "<h2>Registered Units Grades</h2>";
+      container.appendChild(gradesTable);
+    });
+    
+    // Initialize default section by simulating a click on the first nav item
+    document.querySelector('.nav-item').click();
+  </script>
+</body>
+</html>
